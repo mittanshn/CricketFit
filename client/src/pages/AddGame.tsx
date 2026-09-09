@@ -71,107 +71,115 @@ function AddGame() {
     <div className="app">
       <h1 className="title">Log Game</h1>
 
-      <form className="practice-form" onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Opponent"
-          value={opponent}
-          onChange={(event) => setOpponent(event.target.value)}
-        />
+      <form className="game-form" onSubmit={handleSubmit}>
+        <div className="form-row">
+          <input
+            type="text"
+            placeholder="Opponent"
+            value={opponent}
+            onChange={(event) => setOpponent(event.target.value)}
+          />
 
-        <input
-          type="text"
-          placeholder="Match Type (e.g. T20, Club Match)"
-          value={matchType}
-          onChange={(event) => setMatchType(event.target.value)}
-        />
+          <input
+            type="text"
+            placeholder="Match Type (e.g. T20, Club Match)"
+            value={matchType}
+            onChange={(event) => setMatchType(event.target.value)}
+          />
+        </div>
 
         <h2 className="form-section-title">Batting</h2>
 
-        <input
-          type="number"
-          min="0"
-          placeholder="Runs"
-          value={battingRuns}
-          onChange={(event) => setBattingRuns(event.target.value)}
-        />
+        <div className="form-row">
+          <input
+            type="number"
+            min="0"
+            placeholder="Runs"
+            value={battingRuns}
+            onChange={(event) => setBattingRuns(event.target.value)}
+          />
 
-        <input
-          type="number"
-          min="0"
-          placeholder="Balls Faced"
-          value={battingBalls}
-          onChange={(event) => setBattingBalls(event.target.value)}
-        />
+          <input
+            type="number"
+            min="0"
+            placeholder="Balls Faced"
+            value={battingBalls}
+            onChange={(event) => setBattingBalls(event.target.value)}
+          />
 
-        <input
-          type="number"
-          min="0"
-          placeholder="Fours"
-          value={fours}
-          onChange={(event) => setFours(event.target.value)}
-        />
+          <input
+            type="number"
+            min="0"
+            placeholder="Fours"
+            value={fours}
+            onChange={(event) => setFours(event.target.value)}
+          />
 
-        <input
-          type="number"
-          min="0"
-          placeholder="Sixes"
-          value={sixes}
-          onChange={(event) => setSixes(event.target.value)}
-        />
+          <input
+            type="number"
+            min="0"
+            placeholder="Sixes"
+            value={sixes}
+            onChange={(event) => setSixes(event.target.value)}
+          />
 
-        <select value={dismissal} onChange={(event) => setDismissal(event.target.value)}>
-          {DISMISSALS.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
+          <select value={dismissal} onChange={(event) => setDismissal(event.target.value)}>
+            {DISMISSALS.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <h2 className="form-section-title">Bowling</h2>
 
-        <input
-          type="number"
-          min="0"
-          step="0.1"
-          placeholder="Overs Bowled"
-          value={oversBowled}
-          onChange={(event) => setOversBowled(event.target.value)}
-        />
+        <div className="form-row">
+          <input
+            type="number"
+            min="0"
+            step="0.1"
+            placeholder="Overs Bowled"
+            value={oversBowled}
+            onChange={(event) => setOversBowled(event.target.value)}
+          />
 
-        <input
-          type="number"
-          min="0"
-          placeholder="Runs Conceded"
-          value={runsConceded}
-          onChange={(event) => setRunsConceded(event.target.value)}
-        />
+          <input
+            type="number"
+            min="0"
+            placeholder="Runs Conceded"
+            value={runsConceded}
+            onChange={(event) => setRunsConceded(event.target.value)}
+          />
 
-        <input
-          type="number"
-          min="0"
-          placeholder="Wickets"
-          value={wickets}
-          onChange={(event) => setWickets(event.target.value)}
-        />
+          <input
+            type="number"
+            min="0"
+            placeholder="Wickets"
+            value={wickets}
+            onChange={(event) => setWickets(event.target.value)}
+          />
+        </div>
 
         <h2 className="form-section-title">Fielding</h2>
 
-        <input
-          type="number"
-          min="0"
-          placeholder="Catches"
-          value={catches}
-          onChange={(event) => setCatches(event.target.value)}
-        />
+        <div className="form-row">
+          <input
+            type="number"
+            min="0"
+            placeholder="Catches"
+            value={catches}
+            onChange={(event) => setCatches(event.target.value)}
+          />
 
-        <input
-          type="number"
-          min="0"
-          placeholder="Run Outs"
-          value={runOuts}
-          onChange={(event) => setRunOuts(event.target.value)}
-        />
+          <input
+            type="number"
+            min="0"
+            placeholder="Run Outs"
+            value={runOuts}
+            onChange={(event) => setRunOuts(event.target.value)}
+          />
+        </div>
 
         <textarea
           placeholder="Notes from the game"

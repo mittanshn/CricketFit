@@ -89,6 +89,60 @@ body {
   text-align: left;
 }
 
+.game-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 720px;
+  padding: 0 24px 60px;
+  box-sizing: border-box;
+}
+
+.game-form .form-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.game-form .form-row input,
+.game-form .form-row select {
+  flex: 1;
+  min-width: 110px;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+}
+
+.game-form textarea {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.game-form button {
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background-color: #2563eb;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.game-form button:hover {
+  background-color: #1d4ed8;
+}
+
+.game-form button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .practice-form button {
   padding: 12px;
   border: none;
