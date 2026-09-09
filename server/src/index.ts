@@ -1,8 +1,11 @@
 import express from "express";
 import cors from "cors";
 import { randomUUID } from "crypto";
-import { addSession, getSessions, PracticeSession } from "./store";
+import { addSession, getSessions, PracticeSession, SessionType } from "./store";
 import { buildAnalytics, Role } from "./analytics";
+import { deletePlan, getPlansInRange, upsertPlan, PlannedExercise } from "./planStore";
+
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 const app = express();
 
@@ -43,6 +46,56 @@ app.post("/practice", (req, res) => {
 app.get("/analytics", (req, res) => {
   const role = (req.query.role as Role) || "battingAllrounder";
   res.json(buildAnalytics(getSessions(), role));
+});
+
+app.get("/plans", (req, res) => {
+  const { start, end } = req.query;
+
+  if (
+    typeof start !== "string" ||
+    typeof end !== "string" ||
+    !DATE_RE.test(start) ||
+    !DATE_RE.test(end)
+  ) {
+    res.status(400).json({ message: "start and end query params (YYYY-MM-DD) are required" });
+    return;
+  }
+
+  res.json(getPlansInRange(start, end));
+});
+
+app.put("/plans/:date", (req, res) => {
+  const { date } = req.params;
+
+  if (!DATE_RE.test(date)) {
+    res.status(400).json({ message: "date must be in YYYY-MM-DD format" });
+    return;
+  }
+
+  const { sessionType, exercises } = req.body as {
+    sessionType: SessionType;
+    exercises: PlannedExercise[];
+  };
+
+  if (!sessionType) {
+    res.status(400).json({ message: "sessionType is required" });
+    return;
+  }
+
+  const plan = upsertPlan(date, sessionType, Array.isArray(exercises) ? exercises : []);
+  res.json(plan);
+});
+
+app.delete("/plans/:date", (req, res) => {
+  const { date } = req.params;
+
+  if (!DATE_RE.test(date)) {
+    res.status(400).json({ message: "date must be in YYYY-MM-DD format" });
+    return;
+  }
+
+  deletePlan(date);
+  res.status(204).send();
 });
 
 const PORT = 5001;

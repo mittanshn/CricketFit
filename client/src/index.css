@@ -107,3 +107,115 @@ body {
 .navbar a:hover {
   color: #60a5fa;
 }
+
+.week-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.week-nav button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  background-color: #1e293b;
+  color: white;
+  cursor: pointer;
+}
+
+.week-nav button:hover {
+  background-color: #334155;
+}
+
+.planner-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  width: 100%;
+  max-width: 1400px;
+  padding: 0 24px 60px;
+  box-sizing: border-box;
+}
+
+.day-card {
+  background-color: #1e293b;
+  padding: 16px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.day-card h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.day-card select {
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
+}
+
+.exercise-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.exercise-row {
+  display: flex;
+  gap: 6px;
+}
+
+.exercise-row input {
+  flex: 1;
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+  font-size: 14px;
+  min-width: 0;
+}
+
+.remove-exercise {
+  background: none;
+  border: none;
+  color: #f87171;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0 6px;
+}
+
+.add-exercise {
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px dashed #475569;
+  background: none;
+  color: #cbd5e1;
+  cursor: pointer;
+}
+
+.add-exercise:hover {
+  border-color: #60a5fa;
+  color: #60a5fa;
+}
+
+.save-day {
+  margin-top: auto;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background-color: #2563eb;
+  color: white;
+  cursor: pointer;
+}
+
+.save-day:hover {
+  background-color: #1d4ed8;
+}
+
+.save-day:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
