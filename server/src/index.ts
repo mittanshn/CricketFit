@@ -1,9 +1,15 @@
 import express from "express";
 import cors from "cors";
 import { randomUUID } from "crypto";
-import { addSession, getSessions, PracticeSession, SessionType } from "./store";
+import { addSession, getSessions, PracticeSession } from "./store";
 import { buildAnalytics, Role } from "./analytics";
-import { deletePlan, getPlansInRange, upsertPlan, PlannedExercise } from "./planStore";
+import {
+  deletePlan,
+  getPlansInRange,
+  upsertPlan,
+  PlannedExercise,
+  PlanSessionType,
+} from "./planStore";
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -73,7 +79,7 @@ app.put("/plans/:date", (req, res) => {
   }
 
   const { sessionType, exercises } = req.body as {
-    sessionType: SessionType;
+    sessionType: PlanSessionType;
     exercises: PlannedExercise[];
   };
 

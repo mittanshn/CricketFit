@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-type SessionType = "Batting" | "Bowling" | "Fitness" | "Rest";
+type SessionType = "Batting" | "Bowling" | "Fitness" | "Stretching & Mobility" | "Rest";
 
 type PlannedExercise = {
   id: string;
@@ -15,7 +15,13 @@ type DayPlan = {
   exercises: PlannedExercise[];
 };
 
-const SESSION_TYPES: SessionType[] = ["Batting", "Bowling", "Fitness", "Rest"];
+const SESSION_TYPES: SessionType[] = [
+  "Batting",
+  "Bowling",
+  "Fitness",
+  "Stretching & Mobility",
+  "Rest",
+];
 
 const EXERCISE_CATEGORIES = ["Drills", "Nets", "Match Scenario"] as const;
 
@@ -174,9 +180,13 @@ function Planner() {
 
               <select
                 value={plan.sessionType}
-                onChange={(event) =>
-                  updatePlan(key, { sessionType: event.target.value as SessionType })
-                }
+                onChange={(event) => {
+                  const nextType = event.target.value as SessionType;
+                  updatePlan(key, {
+                    sessionType: nextType,
+                    exercises: nextType === "Rest" ? [] : plan.exercises,
+                  });
+                }}
               >
                 {SESSION_TYPES.map((type) => (
                   <option key={type} value={type}>
@@ -185,62 +195,68 @@ function Planner() {
                 ))}
               </select>
 
-              <div className="exercise-list">
-                {plan.exercises.map((exercise) => (
-                  <div className="exercise-row" key={exercise.id}>
-                    {isBatOrBowl(plan.sessionType) ? (
-                      <select
-                        value={exercise.name}
-                        onChange={(event) =>
-                          updateExercise(key, exercise.id, "name", event.target.value)
-                        }
-                      >
-                        <option value="">Select Type</option>
-                        {EXERCISE_CATEGORIES.map((category) => (
-                          <option key={category} value={category}>
-                            {category}
-                          </option>
-                        ))}
-                      </select>
-                    ) : (
+              {plan.sessionType !== "Rest" && (
+                <div className="exercise-list">
+                  {plan.exercises.map((exercise) => (
+                    <div className="exercise-row" key={exercise.id}>
+                      {isBatOrBowl(plan.sessionType) ? (
+                        <select
+                          value={exercise.name}
+                          onChange={(event) =>
+                            updateExercise(key, exercise.id, "name", event.target.value)
+                          }
+                        >
+                          <option value="">Select Type</option>
+                          {EXERCISE_CATEGORIES.map((category) => (
+                            <option key={category} value={category}>
+                              {category}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          type="text"
+                          placeholder="Exercise"
+                          value={exercise.name}
+                          onChange={(event) =>
+                            updateExercise(key, exercise.id, "name", event.target.value)
+                          }
+                        />
+                      )}
                       <input
                         type="text"
-                        placeholder="Exercise"
-                        value={exercise.name}
+                        placeholder={
+                          isBatOrBowl(plan.sessionType)
+                            ? exercise.name === "Drills"
+                              ? "Describe the drill"
+                              : "Describe what you're working on"
+                            : "Sets/reps/notes"
+                        }
+                        value={exercise.detail}
                         onChange={(event) =>
-                          updateExercise(key, exercise.id, "name", event.target.value)
+                          updateExercise(key, exercise.id, "detail", event.target.value)
                         }
                       />
-                    )}
-                    <input
-                      type="text"
-                      placeholder={
-                        isBatOrBowl(plan.sessionType)
-                          ? exercise.name === "Drills"
-                            ? "Describe the drill"
-                            : "Describe what you're working on"
-                          : "Sets/reps/notes"
-                      }
-                      value={exercise.detail}
-                      onChange={(event) =>
-                        updateExercise(key, exercise.id, "detail", event.target.value)
-                      }
-                    />
-                    <button
-                      type="button"
-                      className="remove-exercise"
-                      onClick={() => removeExercise(key, exercise.id)}
-                      aria-label="Remove exercise"
-                    >
-                      &times;
-                    </button>
-                  </div>
-                ))}
+                      <button
+                        type="button"
+                        className="remove-exercise"
+                        onClick={() => removeExercise(key, exercise.id)}
+                        aria-label="Remove exercise"
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  ))}
 
-                <button type="button" className="add-exercise" onClick={() => addExercise(key)}>
-                  + Add Exercise
-                </button>
-              </div>
+                  <button
+                    type="button"
+                    className="add-exercise"
+                    onClick={() => addExercise(key)}
+                  >
+                    + Add Exercise
+                  </button>
+                </div>
+              )}
 
               <button
                 type="button"

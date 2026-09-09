@@ -1,6 +1,12 @@
 import fs from "fs";
 import path from "path";
-import { SessionType } from "./store";
+
+export type PlanSessionType =
+  | "Batting"
+  | "Bowling"
+  | "Fitness"
+  | "Stretching & Mobility"
+  | "Rest";
 
 export type PlannedExercise = {
   id: string;
@@ -10,7 +16,7 @@ export type PlannedExercise = {
 
 export type DayPlan = {
   date: string;
-  sessionType: SessionType;
+  sessionType: PlanSessionType;
   exercises: PlannedExercise[];
 };
 
@@ -40,7 +46,7 @@ export function getPlansInRange(start: string, end: string): DayPlan[] {
 
 export function upsertPlan(
   date: string,
-  sessionType: SessionType,
+  sessionType: PlanSessionType,
   exercises: PlannedExercise[],
 ): DayPlan {
   const plans = readAll();
