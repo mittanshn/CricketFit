@@ -17,6 +17,12 @@ type DayPlan = {
 
 const SESSION_TYPES: SessionType[] = ["Batting", "Bowling", "Fitness", "Rest"];
 
+const EXERCISE_CATEGORIES = ["Drills", "Nets", "Match Scenario"] as const;
+
+function isBatOrBowl(sessionType: SessionType): boolean {
+  return sessionType === "Batting" || sessionType === "Bowling";
+}
+
 function toDateKey(date: Date): string {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -182,17 +188,39 @@ function Planner() {
               <div className="exercise-list">
                 {plan.exercises.map((exercise) => (
                   <div className="exercise-row" key={exercise.id}>
+                    {isBatOrBowl(plan.sessionType) ? (
+                      <select
+                        value={exercise.name}
+                        onChange={(event) =>
+                          updateExercise(key, exercise.id, "name", event.target.value)
+                        }
+                      >
+                        <option value="">Select Type</option>
+                        {EXERCISE_CATEGORIES.map((category) => (
+                          <option key={category} value={category}>
+                            {category}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        type="text"
+                        placeholder="Exercise"
+                        value={exercise.name}
+                        onChange={(event) =>
+                          updateExercise(key, exercise.id, "name", event.target.value)
+                        }
+                      />
+                    )}
                     <input
                       type="text"
-                      placeholder="Exercise"
-                      value={exercise.name}
-                      onChange={(event) =>
-                        updateExercise(key, exercise.id, "name", event.target.value)
+                      placeholder={
+                        isBatOrBowl(plan.sessionType)
+                          ? exercise.name === "Drills"
+                            ? "Describe the drill"
+                            : "Describe what you're working on"
+                          : "Sets/reps/notes"
                       }
-                    />
-                    <input
-                      type="text"
-                      placeholder="Sets/reps/notes"
                       value={exercise.detail}
                       onChange={(event) =>
                         updateExercise(key, exercise.id, "detail", event.target.value)

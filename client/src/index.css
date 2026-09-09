@@ -169,7 +169,8 @@ body {
   gap: 6px;
 }
 
-.exercise-row input {
+.exercise-row input,
+.exercise-row select {
   flex: 1;
   padding: 8px;
   border-radius: 6px;
