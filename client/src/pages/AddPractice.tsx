@@ -10,6 +10,7 @@ function AddPractice() {
   const [intensity, setIntensity] = useState("Medium");
   const [performanceRating, setPerformanceRating] = useState("");
   const [fatigueLevel, setFatigueLevel] = useState("");
+  const [notes, setNotes] = useState("");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -31,6 +32,7 @@ function AddPractice() {
         intensity,
         performanceRating: performanceRating ? Number(performanceRating) : 0,
         fatigueLevel: fatigueLevel ? Number(fatigueLevel) : 0,
+        notes,
       });
 
       navigate("/");
@@ -89,6 +91,13 @@ function AddPractice() {
           placeholder="Fatigue Level (0-10)"
           value={fatigueLevel}
           onChange={(event) => setFatigueLevel(event.target.value)}
+        />
+
+        <textarea
+          placeholder="Notes"
+          rows={4}
+          value={notes}
+          onChange={(event) => setNotes(event.target.value)}
         />
 
         {error && <p style={{ color: "#f87171" }}>{error}</p>}

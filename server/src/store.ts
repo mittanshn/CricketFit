@@ -12,6 +12,7 @@ export type PracticeSession = {
   intensity: Intensity;
   performanceRating: number;
   fatigueLevel: number;
+  notes: string;
 };
 
 const DATA_DIR = path.join(__dirname, "..", "data");

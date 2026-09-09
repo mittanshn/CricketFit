@@ -10,6 +10,7 @@ import {
   PlannedExercise,
   PlanSessionType,
 } from "./planStore";
+import { addGame, getGames, GameEntry, Dismissal } from "./gameStore";
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -27,7 +28,8 @@ app.get("/practice", (req, res) => {
 });
 
 app.post("/practice", (req, res) => {
-  const { sessionType, duration, intensity, performanceRating, fatigueLevel } = req.body;
+  const { sessionType, duration, intensity, performanceRating, fatigueLevel, notes } =
+    req.body;
 
   if (!sessionType || !duration) {
     res.status(400).json({ message: "sessionType and duration are required" });
@@ -42,6 +44,7 @@ app.post("/practice", (req, res) => {
     intensity: intensity || "Medium",
     performanceRating: Number(performanceRating) || 0,
     fatigueLevel: Number(fatigueLevel) || 0,
+    notes: notes || "",
   };
 
   addSession(session);
@@ -102,6 +105,55 @@ app.delete("/plans/:date", (req, res) => {
 
   deletePlan(date);
   res.status(204).send();
+});
+
+app.get("/games", (req, res) => {
+  res.json(getGames());
+});
+
+app.post("/games", (req, res) => {
+  const {
+    opponent,
+    matchType,
+    battingRuns,
+    battingBalls,
+    fours,
+    sixes,
+    dismissal,
+    oversBowled,
+    runsConceded,
+    wickets,
+    catches,
+    runOuts,
+    notes,
+  } = req.body;
+
+  if (!opponent || !matchType) {
+    res.status(400).json({ message: "opponent and matchType are required" });
+    return;
+  }
+
+  const game: GameEntry = {
+    id: randomUUID(),
+    date: new Date().toISOString(),
+    opponent,
+    matchType,
+    battingRuns: Number(battingRuns) || 0,
+    battingBalls: Number(battingBalls) || 0,
+    fours: Number(fours) || 0,
+    sixes: Number(sixes) || 0,
+    dismissal: (dismissal as Dismissal) || "Not Out",
+    oversBowled: Number(oversBowled) || 0,
+    runsConceded: Number(runsConceded) || 0,
+    wickets: Number(wickets) || 0,
+    catches: Number(catches) || 0,
+    runOuts: Number(runOuts) || 0,
+    notes: notes || "",
+  };
+
+  addGame(game);
+
+  res.status(201).json({ message: "Game saved", game });
 });
 
 const PORT = 5001;

@@ -69,11 +69,24 @@ body {
 }
 
 .practice-form input,
-.practice-form select {
+.practice-form select,
+.practice-form textarea {
   padding: 12px;
   border-radius: 8px;
   border: none;
   font-size: 16px;
+  font-family: inherit;
+}
+
+.practice-form textarea {
+  resize: vertical;
+}
+
+.form-section-title {
+  margin: 4px 0 -8px;
+  font-size: 15px;
+  color: #94a3b8;
+  text-align: left;
 }
 
 .practice-form button {
@@ -219,4 +232,56 @@ body {
 .save-day:disabled {
   opacity: 0.6;
   cursor: default;
+}
+
+.stats-section-title {
+  width: 100%;
+  max-width: 900px;
+  margin: 30px 0 16px;
+  font-size: 20px;
+  text-align: left;
+}
+
+.game-log {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 900px;
+  padding: 0 24px 60px;
+  box-sizing: border-box;
+}
+
+.game-entry {
+  background-color: #1e293b;
+  padding: 16px;
+  border-radius: 12px;
+  text-align: left;
+}
+
+.game-entry-header {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.game-entry-header span {
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.game-entry-stats {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 14px;
+  color: #cbd5e1;
+}
+
+.game-entry-notes {
+  margin-top: 8px;
+  color: #cbd5e1;
+  font-size: 14px;
 }
