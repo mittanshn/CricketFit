@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import DashboardCard from "../components/DashboardCard";
 
 type Role = "batsman" | "bowler" | "battingAllrounder" | "bowlingAllrounder";
@@ -33,17 +34,34 @@ function Analytics() {
   );
   const [data, setData] = useState<AnalyticsResponse | null>(null);
   const [error, setError] = useState("");
+  const [seeding, setSeeding] = useState(false);
 
-  useEffect(() => {
-    localStorage.setItem("cricketfit-role", role);
-
+  function loadAnalytics() {
     axios
       .get<AnalyticsResponse>("http://localhost:5001/analytics", {
         params: { role },
       })
       .then((response) => setData(response.data))
       .catch(() => setError("Could not load analytics. Is the server running?"));
+  }
+
+  useEffect(() => {
+    localStorage.setItem("cricketfit-role", role);
+    loadAnalytics();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [role]);
+
+  async function loadSampleData() {
+    setSeeding(true);
+    try {
+      await axios.post("http://localhost:5001/demo/seed");
+      loadAnalytics();
+    } catch {
+      setError("Could not load sample data.");
+    } finally {
+      setSeeding(false);
+    }
+  }
 
   return (
     <div className="app">
@@ -70,7 +88,18 @@ function Analytics() {
       </div>
 
       {data && !data.hasData && (
-        <p>No practice sessions yet. Add one to see your analytics.</p>
+        <div className="empty-state-card">
+          <h2>No practice sessions yet</h2>
+          <p>Log a practice session to see your analytics, or explore with sample data.</p>
+          <div className="empty-state-actions">
+            <Link to="/practice">
+              <button className="add-button">Log Your First Practice</button>
+            </Link>
+            <button className="add-button secondary" disabled={seeding} onClick={loadSampleData}>
+              {seeding ? "Loading..." : "Load Sample Data"}
+            </button>
+          </div>
+        </div>
       )}
 
       {data && data.hasData && (

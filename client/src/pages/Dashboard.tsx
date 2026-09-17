@@ -11,6 +11,7 @@ type PracticeSession = {
   intensity: "Low" | "Medium" | "High";
   performanceRating: number;
   fatigueLevel: number;
+  balls: number;
 };
 
 type TodaysPlan = {
@@ -34,6 +35,19 @@ type TodaysPlan = {
   } | null;
 };
 
+type WeeklyTargets = {
+  sessions: number;
+  minutes: number;
+  balls: number;
+  fitnessSessions: number;
+};
+
+type PlayerProfile = {
+  weeklyTargets: WeeklyTargets;
+};
+
+const MILESTONES = [10, 25, 50, 100, 200, 365];
+
 function getWeekStart(date: Date): Date {
   const day = date.getDay();
   const diff = (day === 0 ? -6 : 1) - day;
@@ -41,6 +55,10 @@ function getWeekStart(date: Date): Date {
   monday.setHours(0, 0, 0, 0);
   monday.setDate(date.getDate() + diff);
   return monday;
+}
+
+function weekKey(date: Date): string {
+  return getWeekStart(date).toISOString().slice(0, 10);
 }
 
 function todayKey(): string {
@@ -51,11 +69,64 @@ function todayKey(): string {
   return `${year}-${month}-${day}`;
 }
 
+function computeWeeklyStreak(sessions: PracticeSession[], targetSessions: number): number {
+  if (targetSessions <= 0) return 0;
+
+  const weekCounts = new Map<string, number>();
+  for (const s of sessions) {
+    const key = weekKey(new Date(s.date));
+    weekCounts.set(key, (weekCounts.get(key) || 0) + 1);
+  }
+
+  const cursor = getWeekStart(new Date());
+  const currentKey = cursor.toISOString().slice(0, 10);
+  if ((weekCounts.get(currentKey) || 0) < targetSessions) {
+    cursor.setDate(cursor.getDate() - 7);
+  }
+
+  let streak = 0;
+  while (true) {
+    const key = cursor.toISOString().slice(0, 10);
+    const count = weekCounts.get(key) || 0;
+    if (count >= targetSessions) {
+      streak += 1;
+      cursor.setDate(cursor.getDate() - 7);
+    } else {
+      break;
+    }
+  }
+  return streak;
+}
+
+function nextMilestoneMessage(totalSessions: number): string | null {
+  const crossed = MILESTONES.filter((m) => totalSessions >= m).pop();
+  return crossed ? `Milestone: ${crossed} sessions logged!` : null;
+}
+
+function ProgressBar({ label, value, target }: { label: string; value: number; target: number }) {
+  const pct = target > 0 ? Math.min(100, Math.round((value / target) * 100)) : 0;
+  return (
+    <div className="progress-row">
+      <div className="progress-label">
+        <span>{label}</span>
+        <span>
+          {value} / {target}
+        </span>
+      </div>
+      <div className="progress-track">
+        <div className="progress-fill" style={{ width: `${pct}%` }} />
+      </div>
+    </div>
+  );
+}
+
 function Dashboard() {
   const navigate = useNavigate();
 
   const [sessions, setSessions] = useState<PracticeSession[] | null>(null);
+  const [profile, setProfile] = useState<PlayerProfile | null>(null);
   const [error, setError] = useState("");
+  const [seeding, setSeeding] = useState(false);
 
   const [readinessChecked, setReadinessChecked] = useState<boolean | null>(null);
   const [soreness, setSoreness] = useState(3);
@@ -66,11 +137,19 @@ function Dashboard() {
 
   const [plan, setPlan] = useState<TodaysPlan | null>(null);
 
-  useEffect(() => {
+  function loadSessions() {
     axios
       .get<PracticeSession[]>("http://localhost:5001/practice")
       .then((response) => setSessions(response.data))
       .catch(() => setError("Could not load sessions. Is the server running?"));
+  }
+
+  useEffect(() => {
+    loadSessions();
+    axios
+      .get<PlayerProfile>("http://localhost:5001/profile")
+      .then((response) => setProfile(response.data))
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -106,6 +185,18 @@ function Dashboard() {
     }
   }
 
+  async function loadSampleData() {
+    setSeeding(true);
+    try {
+      await axios.post("http://localhost:5001/demo/seed");
+      loadSessions();
+    } catch {
+      setError("Could not load sample data.");
+    } finally {
+      setSeeding(false);
+    }
+  }
+
   function startSession(params: {
     sessionType: string;
     duration: number;
@@ -131,6 +222,13 @@ function Dashboard() {
     (s) => s.sessionType === "Fitness",
   ).length;
   const totalMinutes = thisWeekSessions.reduce((sum, s) => sum + s.duration, 0);
+  const totalBalls = thisWeekSessions.reduce((sum, s) => sum + (s.balls || 0), 0);
+
+  const targets = profile?.weeklyTargets;
+  const streak = computeWeeklyStreak(sessions ?? [], targets?.sessions ?? 0);
+  const milestone = nextMilestoneMessage((sessions ?? []).length);
+
+  const isEmpty = sessions !== null && sessions.length === 0;
 
   return (
     <div className="app">
@@ -139,6 +237,21 @@ function Dashboard() {
       <p className="subtitle">Cricket Practice & Fitness Tracker</p>
 
       {error && <p style={{ color: "#f87171" }}>{error}</p>}
+
+      {isEmpty && (
+        <div className="empty-state-card">
+          <h2>Let's get your first week going</h2>
+          <p>You haven't logged anything yet. Start by planning your week, or explore the app with sample data.</p>
+          <div className="empty-state-actions">
+            <Link to="/planner">
+              <button className="add-button">Create My First Weekly Plan</button>
+            </Link>
+            <button className="add-button secondary" disabled={seeding} onClick={loadSampleData}>
+              {seeding ? "Loading..." : "Load Sample Data"}
+            </button>
+          </div>
+        </div>
+      )}
 
       {readinessChecked === false && (
         <div className="readiness-card">
@@ -287,6 +400,33 @@ function Dashboard() {
           value={`${totalMinutes} Total Minutes`}
         />
       </div>
+
+      {(streak > 0 || milestone) && (
+        <div className="streak-card">
+          {streak > 0 && (
+            <span>
+              🔥 {streak} week{streak === 1 ? "" : "s"} hitting your session goal
+            </span>
+          )}
+          {milestone && <span>🏆 {milestone}</span>}
+        </div>
+      )}
+
+      {targets && (
+        <div className="goals-card">
+          <h2 className="stats-section-title" style={{ margin: "0 0 12px" }}>
+            Weekly Goals
+          </h2>
+          <ProgressBar label="Sessions" value={sessionsThisWeek} target={targets.sessions} />
+          <ProgressBar label="Training Minutes" value={totalMinutes} target={targets.minutes} />
+          <ProgressBar label="Balls Faced/Bowled" value={totalBalls} target={targets.balls} />
+          <ProgressBar
+            label="Fitness Sessions"
+            value={fitnessWorkouts}
+            target={targets.fitnessSessions}
+          />
+        </div>
+      )}
 
       <Link to="/practice">
         <button className="add-button">Add Session</button>

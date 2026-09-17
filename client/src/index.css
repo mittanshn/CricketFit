@@ -413,3 +413,75 @@ body {
 .plan-card .add-button {
   margin-top: 8px;
 }
+
+.empty-state-card,
+.goals-card {
+  width: 100%;
+  max-width: 700px;
+  margin-bottom: 30px;
+  padding: 24px;
+  box-sizing: border-box;
+  background-color: #1e293b;
+  border-radius: 16px;
+  text-align: left;
+}
+
+.empty-state-card h2 {
+  margin-top: 0;
+}
+
+.empty-state-card p {
+  color: #cbd5e1;
+}
+
+.empty-state-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.add-button.secondary {
+  background-color: transparent;
+  border: 1px solid #475569;
+}
+
+.add-button.secondary:hover {
+  background-color: #334155;
+}
+
+.streak-card {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 700px;
+  margin: 20px 0;
+  font-size: 15px;
+  color: #f1f5f9;
+}
+
+.progress-row {
+  margin-bottom: 14px;
+}
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #cbd5e1;
+  margin-bottom: 4px;
+}
+
+.progress-track {
+  background-color: #0f172a;
+  border-radius: 6px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  background-color: #2563eb;
+  height: 100%;
+  border-radius: 6px;
+}
