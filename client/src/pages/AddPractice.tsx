@@ -1,16 +1,24 @@
 import axios from "axios";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+
+function isBatOrBowl(sessionType: string): boolean {
+  return sessionType === "Batting" || sessionType === "Bowling";
+}
 
 function AddPractice() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-  const [sessionType, setSessionType] = useState("Batting");
-  const [duration, setDuration] = useState("");
+  const [sessionType, setSessionType] = useState(searchParams.get("sessionType") || "Batting");
+  const [duration, setDuration] = useState(searchParams.get("duration") || "");
   const [intensity, setIntensity] = useState("Medium");
   const [performanceRating, setPerformanceRating] = useState("");
   const [fatigueLevel, setFatigueLevel] = useState("");
-  const [notes, setNotes] = useState("");
+  const [notes, setNotes] = useState(searchParams.get("notes") || "");
+  const [drills, setDrills] = useState(searchParams.get("drills") || "");
+  const [balls, setBalls] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -33,6 +41,9 @@ function AddPractice() {
         performanceRating: performanceRating ? Number(performanceRating) : 0,
         fatigueLevel: fatigueLevel ? Number(fatigueLevel) : 0,
         notes,
+        drills,
+        balls: balls ? Number(balls) : 0,
+        videoUrl,
       });
 
       navigate("/");
@@ -54,6 +65,7 @@ function AddPractice() {
         >
           <option value="Batting">Batting</option>
           <option value="Bowling">Bowling</option>
+          <option value="Fielding">Fielding</option>
           <option value="Fitness">Fitness</option>
           <option value="Rest">Rest</option>
         </select>
@@ -76,6 +88,23 @@ function AddPractice() {
         </select>
 
         <input
+          type="text"
+          placeholder="Drills (e.g. Yorkers, cover drives)"
+          value={drills}
+          onChange={(event) => setDrills(event.target.value)}
+        />
+
+        {isBatOrBowl(sessionType) && (
+          <input
+            type="number"
+            min="0"
+            placeholder={sessionType === "Batting" ? "Balls Faced" : "Balls Bowled"}
+            value={balls}
+            onChange={(event) => setBalls(event.target.value)}
+          />
+        )}
+
+        <input
           type="number"
           min="0"
           max="10"
@@ -91,6 +120,13 @@ function AddPractice() {
           placeholder="Fatigue Level (0-10)"
           value={fatigueLevel}
           onChange={(event) => setFatigueLevel(event.target.value)}
+        />
+
+        <input
+          type="text"
+          placeholder="Video Link (optional)"
+          value={videoUrl}
+          onChange={(event) => setVideoUrl(event.target.value)}
         />
 
         <textarea

@@ -11,6 +11,10 @@ import {
   PlanSessionType,
 } from "./planStore";
 import { addGame, getGames, GameEntry, Dismissal } from "./gameStore";
+import { getProfile, saveProfile, PlayerProfile } from "./profileStore";
+import { getReadiness, saveReadiness, ReadinessEntry } from "./readinessStore";
+import { SESSION_TEMPLATES } from "./templates";
+import { buildTodaysPlan } from "./todaysPlan";
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -28,8 +32,17 @@ app.get("/practice", (req, res) => {
 });
 
 app.post("/practice", (req, res) => {
-  const { sessionType, duration, intensity, performanceRating, fatigueLevel, notes } =
-    req.body;
+  const {
+    sessionType,
+    duration,
+    intensity,
+    performanceRating,
+    fatigueLevel,
+    notes,
+    drills,
+    balls,
+    videoUrl,
+  } = req.body;
 
   if (!sessionType || !duration) {
     res.status(400).json({ message: "sessionType and duration are required" });
@@ -45,6 +58,9 @@ app.post("/practice", (req, res) => {
     performanceRating: Number(performanceRating) || 0,
     fatigueLevel: Number(fatigueLevel) || 0,
     notes: notes || "",
+    drills: drills || "",
+    balls: Number(balls) || 0,
+    videoUrl: videoUrl || "",
   };
 
   addSession(session);
@@ -154,6 +170,84 @@ app.post("/games", (req, res) => {
   addGame(game);
 
   res.status(201).json({ message: "Game saved", game });
+});
+
+app.get("/profile", (req, res) => {
+  res.json(getProfile());
+});
+
+app.put("/profile", (req, res) => {
+  const { role, skillLevel, focus, weeklyAvailability, upcomingMatchDate } = req.body;
+
+  const sessions = Number(weeklyAvailability) || 0;
+
+  const profile: PlayerProfile = {
+    onboarded: true,
+    role: role || "battingAllrounder",
+    skillLevel: skillLevel || "intermediate",
+    focus: focus || "",
+    weeklyAvailability: sessions,
+    upcomingMatchDate: upcomingMatchDate || null,
+    weeklyTargets: {
+      sessions,
+      minutes: sessions * 60,
+      balls: sessions * 50,
+      fitnessSessions: Math.max(1, Math.round(sessions / 2)),
+    },
+  };
+
+  res.json(saveProfile(profile));
+});
+
+app.get("/readiness/:date", (req, res) => {
+  const { date } = req.params;
+
+  if (!DATE_RE.test(date)) {
+    res.status(400).json({ message: "date must be in YYYY-MM-DD format" });
+    return;
+  }
+
+  res.json(getReadiness(date));
+});
+
+app.put("/readiness/:date", (req, res) => {
+  const { date } = req.params;
+
+  if (!DATE_RE.test(date)) {
+    res.status(400).json({ message: "date must be in YYYY-MM-DD format" });
+    return;
+  }
+
+  const { soreness, energy, sleep, pain } = req.body;
+
+  const entry: ReadinessEntry = {
+    date,
+    soreness: Number(soreness) || 0,
+    energy: Number(energy) || 0,
+    sleep: Number(sleep) || 0,
+    pain: Number(pain) || 0,
+  };
+
+  res.json(saveReadiness(entry));
+});
+
+app.get("/templates", (req, res) => {
+  res.json(SESSION_TEMPLATES);
+});
+
+app.get("/todays-plan", (req, res) => {
+  const { date } = req.query;
+
+  if (typeof date !== "string" || !DATE_RE.test(date)) {
+    res.status(400).json({ message: "date query param (YYYY-MM-DD) is required" });
+    return;
+  }
+
+  const profile = getProfile();
+  const readiness = getReadiness(date);
+  const [dayPlan] = getPlansInRange(date, date);
+
+  res.json(buildTodaysPlan(profile, readiness, dayPlan ?? null));
 });
 
 const PORT = 5001;

@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 
-export type SessionType = "Batting" | "Bowling" | "Fitness" | "Rest";
+export type SessionType = "Batting" | "Bowling" | "Fielding" | "Fitness" | "Rest";
 export type Intensity = "Low" | "Medium" | "High";
 
 export type PracticeSession = {
@@ -13,6 +13,9 @@ export type PracticeSession = {
   performanceRating: number;
   fatigueLevel: number;
   notes: string;
+  drills: string;
+  balls: number;
+  videoUrl: string;
 };
 
 const DATA_DIR = path.join(__dirname, "..", "data");

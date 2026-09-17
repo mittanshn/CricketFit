@@ -339,3 +339,77 @@ body {
   color: #cbd5e1;
   font-size: 14px;
 }
+
+.readiness-card,
+.todays-plan {
+  width: 100%;
+  max-width: 700px;
+  margin-bottom: 30px;
+  padding: 0 24px;
+  box-sizing: border-box;
+}
+
+.readiness-card {
+  background-color: #1e293b;
+  padding: 24px;
+  border-radius: 16px;
+  text-align: left;
+}
+
+.readiness-card h2 {
+  margin-top: 0;
+}
+
+.readiness-card label {
+  display: block;
+  margin-bottom: 16px;
+  color: #cbd5e1;
+  font-size: 14px;
+}
+
+.readiness-card input[type="range"] {
+  width: 100%;
+  margin-top: 6px;
+}
+
+.plan-cards {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.plan-card {
+  flex: 1;
+  min-width: 260px;
+  background-color: #1e293b;
+  padding: 20px;
+  border-radius: 16px;
+  text-align: left;
+}
+
+.plan-card h3 {
+  margin: 8px 0;
+}
+
+.plan-card-tag {
+  display: inline-block;
+  font-size: 12px;
+  color: #60a5fa;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.plan-card-meta {
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.plan-card ul {
+  padding-left: 20px;
+  font-size: 14px;
+  color: #cbd5e1;
+}
+
+.plan-card .add-button {
+  margin-top: 8px;
+}

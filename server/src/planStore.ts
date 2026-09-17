@@ -4,6 +4,7 @@ import path from "path";
 export type PlanSessionType =
   | "Batting"
   | "Bowling"
+  | "Fielding"
   | "Fitness"
   | "Stretching & Mobility"
   | "Rest";

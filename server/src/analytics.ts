@@ -23,6 +23,66 @@ function average(nums: number[]): number {
   return nums.reduce((a, b) => a + b, 0) / nums.length;
 }
 
+function daysSince(dateStr: string): number {
+  const ms = Date.now() - new Date(dateStr).getTime();
+  return Math.floor(ms / (1000 * 60 * 60 * 24));
+}
+
+const TRACKED_TYPES = ["Batting", "Bowling", "Fielding", "Fitness"] as const;
+
+function buildInsights(
+  sessions: PracticeSession[],
+  weeks: Map<string, PracticeSession[]>,
+  latestWeek: string,
+): string[] {
+  const insights: string[] = [];
+  const weekKeys = [...weeks.keys()].sort();
+  const currentIndex = weekKeys.indexOf(latestWeek);
+  const previousWeek = currentIndex > 0 ? weekKeys[currentIndex - 1] : null;
+
+  const currentByType: Record<string, number> = {};
+  for (const s of weeks.get(latestWeek) ?? []) {
+    currentByType[s.sessionType] = (currentByType[s.sessionType] || 0) + s.duration;
+  }
+
+  const previousByType: Record<string, number> = {};
+  if (previousWeek) {
+    for (const s of weeks.get(previousWeek) ?? []) {
+      previousByType[s.sessionType] = (previousByType[s.sessionType] || 0) + s.duration;
+    }
+  }
+
+  for (const type of TRACKED_TYPES) {
+    const current = currentByType[type] || 0;
+    const previous = previousByType[type] || 0;
+
+    if (previous > 0) {
+      const change = ((current - previous) / previous) * 100;
+      if (Math.abs(change) >= 20) {
+        const direction = change > 0 ? "increased" : "decreased";
+        insights.push(
+          `Your ${type.toLowerCase()} workload ${direction} ${Math.abs(Math.round(change))}% this week.`,
+        );
+      }
+    }
+
+    const lastSession = [...sessions]
+      .filter((s) => s.sessionType === type)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+
+    if (lastSession) {
+      const gap = daysSince(lastSession.date);
+      if (gap >= 7) {
+        insights.push(`You haven't trained ${type.toLowerCase()} in ${gap} days.`);
+      }
+    } else {
+      insights.push(`You haven't logged any ${type.toLowerCase()} sessions yet.`);
+    }
+  }
+
+  return insights;
+}
+
 export function buildAnalytics(sessions: PracticeSession[], role: Role) {
   if (sessions.length === 0) {
     return { hasData: false as const };
@@ -71,6 +131,8 @@ export function buildAnalytics(sessions: PracticeSession[], role: Role) {
   if (avgFatigue <= 6) trainingReadinessScore += 30;
   if (avgPerformance >= 7) trainingReadinessScore += 40;
 
+  const insights = buildInsights(sessions, weeks, latestWeek);
+
   return {
     hasData: true as const,
     latestWeek,
@@ -82,5 +144,6 @@ export function buildAnalytics(sessions: PracticeSession[], role: Role) {
     bowlingStatus,
     fatigueRecommendation,
     trainingReadinessScore,
+    insights,
   };
 }

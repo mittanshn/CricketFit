@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-type SessionType = "Batting" | "Bowling" | "Fitness" | "Stretching & Mobility" | "Rest";
+type SessionType =
+  | "Batting"
+  | "Bowling"
+  | "Fielding"
+  | "Fitness"
+  | "Stretching & Mobility"
+  | "Rest";
 
 type PlannedExercise = {
   id: string;
@@ -18,6 +24,7 @@ type DayPlan = {
 const SESSION_TYPES: SessionType[] = [
   "Batting",
   "Bowling",
+  "Fielding",
   "Fitness",
   "Stretching & Mobility",
   "Rest",

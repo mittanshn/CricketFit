@@ -17,6 +17,7 @@ type AnalyticsResponse =
       bowlingStatus: string | null;
       fatigueRecommendation: string;
       trainingReadinessScore: number;
+      insights: string[];
     };
 
 const ROLE_LABELS: Record<Role, string> = {
@@ -116,6 +117,17 @@ function Analytics() {
               </ul>
             </div>
           </div>
+
+          {data.insights.length > 0 && (
+            <div className="card" style={{ width: "100%", maxWidth: 620, marginTop: 20 }}>
+              <h2>Insights</h2>
+              <ul>
+                {data.insights.map((insight, index) => (
+                  <li key={index}>{insight}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </>
       )}
     </div>
