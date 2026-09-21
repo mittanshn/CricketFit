@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import cors from "cors";
 import { randomUUID } from "crypto";
@@ -15,6 +18,7 @@ import { getProfile, saveProfile, PlayerProfile } from "./profileStore";
 import { getReadiness, saveReadiness, ReadinessEntry } from "./readinessStore";
 import { SESSION_TEMPLATES } from "./templates";
 import { buildTodaysPlan } from "./todaysPlan";
+import { askCoach, CoachMessage } from "./coach";
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -336,6 +340,33 @@ app.post("/demo/seed", (req, res) => {
   }
 
   res.status(201).json({ message: "Demo data seeded" });
+});
+
+app.post("/coach/ask", async (req, res) => {
+  const { question, history } = req.body as {
+    question?: string;
+    history?: CoachMessage[];
+  };
+
+  if (!question || !question.trim()) {
+    res.status(400).json({ message: "question is required" });
+    return;
+  }
+
+  try {
+    const answer = await askCoach(question, Array.isArray(history) ? history : []);
+    res.json({ answer });
+  } catch (error) {
+    if (error instanceof Error && error.message === "NOT_CONFIGURED") {
+      res.status(500).json({
+        message:
+          "The AI Coach isn't set up yet. Add ANTHROPIC_API_KEY to server/.env and restart the server.",
+      });
+      return;
+    }
+    console.error(error);
+    res.status(500).json({ message: "Could not reach the AI Coach right now." });
+  }
 });
 
 const PORT = 5001;

@@ -9,6 +9,7 @@ import Planner from "./pages/Planner";
 import AddGame from "./pages/AddGame";
 import Stats from "./pages/Stats";
 import Onboarding from "./pages/Onboarding";
+import Coach from "./pages/Coach";
 
 function OnboardingGate({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
@@ -39,6 +40,7 @@ function App() {
           <Link to="/game">Log Game</Link>
           <Link to="/analytics">Analytics</Link>
           <Link to="/stats">Stats</Link>
+          <Link to="/coach">AI Coach</Link>
           <Link to="/onboarding">Profile</Link>
         </nav>
 
@@ -54,6 +56,8 @@ function App() {
           <Route path="/analytics" element={<Analytics />} />
 
           <Route path="/stats" element={<Stats />} />
+
+          <Route path="/coach" element={<Coach />} />
 
           <Route path="/onboarding" element={<Onboarding />} />
         </Routes>

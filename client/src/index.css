@@ -485,3 +485,83 @@ body {
   height: 100%;
   border-radius: 6px;
 }
+
+.chat-container {
+  width: 100%;
+  max-width: 700px;
+  padding: 0 24px 60px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.chat-suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.chat-suggestions .add-button {
+  text-align: left;
+}
+
+.chat-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chat-bubble {
+  padding: 12px 16px;
+  border-radius: 14px;
+  max-width: 80%;
+  text-align: left;
+  white-space: pre-wrap;
+  line-height: 1.4;
+}
+
+.chat-bubble.user {
+  align-self: flex-end;
+  background-color: #2563eb;
+  color: white;
+}
+
+.chat-bubble.assistant {
+  align-self: flex-start;
+  background-color: #1e293b;
+  color: #f1f5f9;
+}
+
+.chat-input-row {
+  display: flex;
+  gap: 10px;
+}
+
+.chat-input-row input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+}
+
+.chat-input-row button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  background-color: #2563eb;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.chat-input-row button:hover {
+  background-color: #1d4ed8;
+}
+
+.chat-input-row button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
